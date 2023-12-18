@@ -22,17 +22,24 @@ class Field:
         """Устанавливаем корабль на поле"""
         if ((direction.horizontal and row + ship_size - 1 <= 10)
                 or (direction.vertical and column + ship_size - 1 <= 10)):
-
             for cell in range(ship_size):
                 r = row + direction.value[0] * cell
                 c = column + direction.value[1] * cell
-                if (
-                        self.__field[r in range(-1, 2)][c]['ship_number'] == 0
-                        or self.__field[r in range(-1, 2)][c]['ship_number'] == ship_number
 
-                ):
-                    self.__field[r][c]['cell_type'] = ship_size
-                    self.__field[r][c]['ship_number'] = ship_number
+                for row_1 in range(-1, 2):
+                    for column_1 in range(-1, 2):
+                        row_new = r + row_1
+                        column_new = c + column_1
+
+                        if 0 <= row_new < 10 and 0 <= column_new < 10:
+
+                            if self.__field[row_new][column_new]['ship_number'] != 0:
+                                if self.__field[row_new][column_new]['ship_number'] != ship_number:
+                                    return False
+
+                self.__field[r][c]['cell_type'] = ship_size
+                self.__field[r][c]['ship_number'] = ship_number
+
         return True
 
     def __set_cell(self, row: int, column: int, value):

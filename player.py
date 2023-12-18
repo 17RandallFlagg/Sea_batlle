@@ -41,10 +41,10 @@ class Human(Player):
         letters = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9, 'J': 10}
         for ship in ships:
             while True:
-                print(f'Set up {ship[1]}-st {ship[0]}-deck ship')
-                coordinate_row = letters[input('Write a letter from A to J').upper()]
-                coordinates_col = int(input('Write a value from 1 to 10')) - 1
-                direction = input('Write direction: hor или ver')
+                print(f'Set up {ship[0]}-deck ship number {ship[1]}')
+                coordinate_row = letters[input('Write a letter from "A" to "J" = ').upper()]
+                coordinates_col = int(input('Write a value from "1" to "10" = ')) - 1
+                direction = input('Write direction: "hor" or "ver" = ')
                 if direction == 'hor':
                     direction = Direction.horizontal
                 if direction == 'ver':
@@ -52,6 +52,8 @@ class Human(Player):
 
                 if self.own_field.set_ship(coordinate_row, coordinates_col, direction, ship[0], ship[1]):
                     break
+                else:
+                    print("Can't post here, choose another coordinate.")
 
     def shoot(self) -> tuple[int, int]:
         """Спрашиваем у игрока куда стрелять"""
