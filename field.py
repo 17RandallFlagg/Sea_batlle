@@ -44,8 +44,6 @@ class Field:
             self.__field[r][c]['cell_type'] = ship_size
             self.__field[r][c]['ship_number'] = ship_number
 
-
-
         return True
 
     def __set_cell(self, row: int, column: int, value):
