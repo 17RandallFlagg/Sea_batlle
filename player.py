@@ -38,7 +38,7 @@ class Human(Player):
         """Спрашиваем пользователя куда и ставим корабли"""
 
         ships = [[4, 1], [3, 2], [3, 3], [2, 4], [2, 5], [2, 6], [1, 7], [1, 8], [1, 9], [1, 10]]
-        letters = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9, 'J': 10}
+        letters = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9}
         for ship in ships:
             while True:
                 print(f'Set up {ship[0]}-deck ship number {ship[1]}')
