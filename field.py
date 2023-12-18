@@ -20,9 +20,6 @@ class Field:
 
     def set_ship(self, row: int, column: int, direction: Direction, ship_size: int, ship_number: int) -> bool:
         """Устанавливаем корабль на поле"""
-        if not ((direction.horizontal and 10 <= row + ship_size - 1)
-                or (direction.vertical and 10 <= column + ship_size - 1)):
-            return False
 
         for cell in range(ship_size):
             r = row + direction.value[0] * cell
@@ -36,7 +33,6 @@ class Field:
                     column_new = c + column_1
 
                     if 0 <= row_new < 10 and 0 <= column_new < 10:
-
                         if self.__field[row_new][column_new]['ship_number'] != 0:
                             if self.__field[row_new][column_new]['ship_number'] != ship_number:
                                 return False
