@@ -25,6 +25,7 @@ class Player:
         return self.own_field.check_shoot(row, column)
 
     def is_killed_all(self) -> bool:
+
         """Проверяем, что убиты все корабли"""
         return False
 
@@ -32,11 +33,12 @@ class Human(Player):
 
     def __init__(self, name: str):
         super().__init__()
-        self.name = name
+        self.name = "\033[32m{}".format(name)
 
     def place_ships(self):
         """Спрашиваем пользователя куда и ставим корабли"""
 
+        print(self.name, "\033[0m{}".format('please put the ships on your field.'))
         ships = [[4, 1], [3, 2], [3, 3], [2, 4], [2, 5], [2, 6], [1, 7], [1, 8], [1, 9], [1, 10]]
         letters = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9}
         for ship in ships:
@@ -57,13 +59,39 @@ class Human(Player):
 
     def shoot(self) -> tuple[int, int]:
         """Спрашиваем у игрока куда стрелять"""
+        while not ShootResult.miss or self.is_killed_all():
+            print('Select a coordinate for the shot')
+            where_i_was_shooting = []
+            letters = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9}
+            shoot_coord = (int(letters[input('Write a letter from "A" to "J" = ').upper()]),
+                           (int(input('Write a value from "1" to "10" = ')) - 1))
+            if shoot_coord not in where_i_was_shooting:
+                where_i_was_shooting.append(shoot_coord)
+                if self.opponent_field.check_shoot(*shoot_coord):
+                    break
+                return shoot_coord
+            else:
+                print("It's been shot here before, select other coordinates.")
 
 
 class Bot(Player):
 
-    def place_ships(self):
-        """Рандомно расставляем корабли"""
-        self.own_field.set_ship(1, 2, Direction.vertical)
+    def __init__(self, name: str):
+        super().__init__()
+        random_names_for_bot = ['Bot_Galina', 'Bot_Sigizmund', 'Bot_Erjan']
+        self.name = choice(random_names_for_bot)
 
-    def shoot(self) -> tuple[int, int]:
-        """Решаем куда выстрелить"""
+    def place_ships(self):
+        """Спрашиваем пользователя куда и ставим корабли"""
+
+        ships = [[4, 1], [3, 2], [3, 3], [2, 4], [2, 5], [2, 6], [1, 7], [1, 8], [1, 9], [1, 10]]
+        for ship in ships:
+            while True:
+                rand_row = randint(0, 9)
+                rand_column = randint(0, 9)
+                rand_dir = [Direction.horizontal, Direction.vertical]
+                random_direction = choice(rand_dir)
+
+                if self.own_field.set_ship(rand_row, rand_column, random_direction, ship[0], ship[1]):
+                    break
+

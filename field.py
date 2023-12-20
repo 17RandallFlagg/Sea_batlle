@@ -1,5 +1,6 @@
 from enums import Direction, ShootResult
 
+
 class Field:
     """Игровое поле для морского боя"""
 
@@ -16,7 +17,6 @@ class Field:
                         "is_live": True
                     }
                 )
-
 
     def set_ship(self, row: int, column: int, direction: Direction, ship_size: int, ship_number: int) -> bool:
         """Устанавливаем корабль на поле"""
@@ -37,16 +37,22 @@ class Field:
                             if self.__field[row_new][column_new]['ship_number'] != ship_number:
                                 return False
 
+        for cell in range(ship_size):
+            r = row + direction.value[0] * cell
+            c = column + direction.value[1] * cell
             self.__field[r][c]['cell_type'] = ship_size
             self.__field[r][c]['ship_number'] = ship_number
-
         return True
 
     def __set_cell(self, row: int, column: int, value):
         """Меняем значение ячейки"""
 
-    def __check_cell(self, row: int, column: int):
-        """Можно ли туда ставить палубу корабля"""
-
     def check_shoot(self, row: int, column: int) -> ShootResult:
         """Проверяем результат выстрела"""
+        if self.__field[row][column]['ship_number'] != 0:
+            self.__field[row][column]['is_live'] = False
+            for check_row in self.__field:
+                for check_column in check_row:
+                    if check_column == (self.__field[row][column]['is_live']
+                        return ShootResult.hit
+

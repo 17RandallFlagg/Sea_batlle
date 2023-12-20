@@ -23,6 +23,7 @@ class Game:
         """Основной игровой цикл"""
         while self.winner is None:
             # Спрашиваем текущего игрока куда стрелять
+
             row, column = self.current_player.shoot()
             # Спрашиваем противника о результате выстрела
             shoot_result = self.opponent_player.check_shoot(row, column)
