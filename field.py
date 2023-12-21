@@ -49,10 +49,14 @@ class Field:
 
     def check_shoot(self, row: int, column: int) -> ShootResult:
         """Проверяем результат выстрела"""
+        ship = self.__field[row][column]['ship_number']
         if self.__field[row][column]['ship_number'] != 0:
             self.__field[row][column]['is_live'] = False
             for check_row in self.__field:
                 for check_column in check_row:
-                    if check_column == (self.__field[row][column]['is_live']
+                    if self.__field.count(check_column['ship_number'] == ship and check_column['is_live'] == True) > 0:
                         return ShootResult.hit
-
+                    else:
+                        return ShootResult.kill
+        else:
+            return ShootResult.miss

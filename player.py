@@ -25,9 +25,11 @@ class Player:
         return self.own_field.check_shoot(row, column)
 
     def is_killed_all(self) -> bool:
-
         """Проверяем, что убиты все корабли"""
-        return False
+        for row in self.opponent_field:
+            for ship in row:
+                if (ship['ship_number'] != 0 and ship['is_life'] == True) > 0:
+                    return False
 
 class Human(Player):
 
@@ -74,9 +76,10 @@ class Human(Player):
                 print("It's been shot here before, select other coordinates.")
 
 
+
 class Bot(Player):
 
-    def __init__(self, name: str):
+    def __init__(self):
         super().__init__()
         random_names_for_bot = ['Bot_Galina', 'Bot_Sigizmund', 'Bot_Erjan']
         self.name = choice(random_names_for_bot)
