@@ -26,10 +26,11 @@ class Player:
 
     def is_killed_all(self) -> bool:
         """Проверяем, что убиты все корабли"""
-        for row in self.opponent_field:
+        for row in self.opponent_field[0:-1]:
             for ship in row:
                 if (ship['ship_number'] != 0 and ship['is_life'] == True) > 0:
                     return False
+
 
 class Human(Player):
 
@@ -69,12 +70,16 @@ class Human(Player):
                            (int(input('Write a value from "1" to "10" = ')) - 1))
             if shoot_coord not in where_i_was_shooting:
                 where_i_was_shooting.append(shoot_coord)
-                if self.opponent_field.check_shoot(*shoot_coord):
+                if self.opponent_field.check_shoot(*shoot_coord) == ShootResult.hit:
+                    print('Hit! Take another shot.')
+                if self.opponent_field.check_shoot(*shoot_coord) == ShootResult.kill:
+                    print('The ship is sunk! Take another shot.')
                     break
                 return shoot_coord
             else:
                 print("It's been shot here before, select other coordinates.")
-
+        if ShootResult.miss:
+            print('You miss, it goes to your opponent')
 
 
 class Bot(Player):
@@ -98,3 +103,30 @@ class Bot(Player):
                 if self.own_field.set_ship(rand_row, rand_column, random_direction, ship[0], ship[1]):
                     break
 
+    def shoot(self) -> tuple[int, int]:
+        """Спрашиваем у игрока куда стрелять"""
+        while not ShootResult.miss or self.is_killed_all():
+            where_i_was_shooting = []
+            rand_row = randint(0, 9)
+            rand_column = randint(0, 9)
+            shoot_coord = (rand_row, rand_column)
+            if shoot_coord not in where_i_was_shooting:
+                where_i_was_shooting.append(shoot_coord)
+                if self.opponent_field.check_shoot(*shoot_coord):
+                    print('Hit! Take another shot.')
+
+                # if self.opponent_field.check_shoot(*shoot_coord) == ShootResult.hit:
+                #     while not ShootResult.kill:
+                #         for _ in self.opponent_field[0:-1]:
+                #             for x in range(-1, 2):
+                #                 for y in range(-1, 2):
+                #                     if not rand_row + x >= 10 or rand_column + y >= 10:
+                #                         new_rand_row = rand_row + x
+                #                         new_rand_column = rand_column + y
+                #                         shoot_coord = (new_rand_row, new_rand_column)
+                #                         if shoot_coord not in where_i_was_shooting:
+                #                             where_i_was_shooting.append(shoot_coord)
+                #                             self.opponent_field.check_shoot(*shoot_coord)
+
+                    break
+                return shoot_coord
