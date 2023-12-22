@@ -16,3 +16,5 @@ if __name__ == '__main__':
     else:
         player2 = Bot()
     game = Game(player1, player2)
+
+    game.start()

@@ -24,11 +24,11 @@ class Player:
         """Проверяем ячейку в которую произвели выстрел"""
         return self.own_field.check_shoot(row, column)
 
-    def is_killed_all(self) -> bool:
+    def is_killed_all(self, check_field) -> bool:
         """Проверяем, что убиты все корабли"""
-        for row in self.opponent_field[0:-1]:
+        for row in check_field:
             for ship in row:
-                if (ship['ship_number'] != 0 and ship['is_life'] == True) > 0:
+                if check_field.count(ship['ship_number'] != 0 and ship['is_life'] == True) > 0:
                     return False
 
 
@@ -62,7 +62,7 @@ class Human(Player):
 
     def shoot(self) -> tuple[int, int]:
         """Спрашиваем у игрока куда стрелять"""
-        while not ShootResult.miss or self.is_killed_all():
+        while not ShootResult.miss or self.is_killed_all(self.opponent_field):
             print('Select a coordinate for the shot')
             where_i_was_shooting = []
             letters = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9}
@@ -105,7 +105,7 @@ class Bot(Player):
 
     def shoot(self) -> tuple[int, int]:
         """Спрашиваем у игрока куда стрелять"""
-        while not ShootResult.miss or self.is_killed_all():
+        while not ShootResult.miss or self.is_killed_all(self.opponent_field):
             where_i_was_shooting = []
             rand_row = randint(0, 9)
             rand_column = randint(0, 9)

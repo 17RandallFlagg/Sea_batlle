@@ -27,7 +27,6 @@ class Game:
         """Основной игровой цикл"""
         while self.winner is None:
             # Спрашиваем текущего игрока куда стрелять
-            if self.player1.place_ships() and self.player2.place_ships():
 
                 row, column = self.current_player.shoot()
 
