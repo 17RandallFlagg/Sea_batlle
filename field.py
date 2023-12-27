@@ -47,16 +47,32 @@ class Field:
     def __set_cell(self, row: int, column: int, value):
         """Меняем значение ячейки"""
 
-    def check_shoot(self, row: int, column: int) -> ShootResult:
+    def check_shoot(self, shoot_coord) -> ShootResult:
         """Проверяем результат выстрела"""
-        ship = self.__field[row][column]['ship_number']
-        if self.__field[row][column]['ship_number'] != 0:
-            self.__field[row][column]['is_live'] = False
+        self.__field[shoot_coord[0]][shoot_coord[1]]['is_live'] = False
+        ship = self.__field[shoot_coord[0]][shoot_coord[1]]['ship_number']
+        if self.__field[shoot_coord[0]][shoot_coord[1]]['ship_number'] != 0:
+            deck_is_live = 0
             for check_row in self.__field:
                 for check_column in check_row:
-                    if self.__field.count(check_column['ship_number'] == ship and check_column['is_live'] == True) > 0:
-                        return ShootResult.hit
-                    else:
-                        return ShootResult.kill
+                    if check_column['ship_number'] == ship and check_column['is_live'] is True:
+                        deck_is_live += 1
+            if deck_is_live > 0:
+                return ShootResult.hit
+
+            else:
+                return ShootResult.kill
         else:
             return ShootResult.miss
+
+    def is_killed_all(self) -> bool:
+        """Проверяем, что убиты все корабли"""
+        is_live_deck = 0
+        for row in self.__field:
+            for ship in row:
+                if ship['ship_number'] != 0 and ship['is_live'] is True:
+                    is_live_deck += 1
+        if is_live_deck > 0:
+            return False
+        else:
+            return True

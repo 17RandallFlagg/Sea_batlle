@@ -9,6 +9,8 @@ class Player:
     def __init__(self):
         self.own_field = Field()
         self.opponent_field = Field()
+        self.where_i_was_shooting = []
+
 
     def place_ships(self):
         """ Расставляем корабли на поле
@@ -16,20 +18,17 @@ class Player:
         """
         raise NotImplementedError
 
-    def shoot(self) -> tuple[int, int]:
+    def shoot(self):
         """Производим выстрел. Возвращаем row и column"""
         raise NotImplementedError
 
-    def check_shoot(self, row: int, column: int) -> ShootResult:
+    def check_is_not_shoot_early(self, shoot_coord) -> bool:
         """Проверяем ячейку в которую произвели выстрел"""
-        return self.own_field.check_shoot(row, column)
-
-    def is_killed_all(self, check_field) -> bool:
-        """Проверяем, что убиты все корабли"""
-        for row in check_field:
-            for ship in row:
-                if check_field.count(ship['ship_number'] != 0 and ship['is_life'] == True) > 0:
-                    return False
+        if shoot_coord not in self.where_i_was_shooting:
+            self.where_i_was_shooting.append(shoot_coord)
+            return True
+        else:
+            return False
 
 
 class Human(Player):
@@ -40,9 +39,8 @@ class Human(Player):
 
     def place_ships(self):
         """Спрашиваем пользователя куда и ставим корабли"""
-
         print(self.name, "\033[0m{}".format('please put the ships on your field.'))
-        ships = [[4, 1], [3, 2], [3, 3], [2, 4], [2, 5], [2, 6], [1, 7], [1, 8], [1, 9], [1, 10]]
+        ships = [[4, 1]]
         letters = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9}
         for ship in ships:
             while True:
@@ -60,34 +58,41 @@ class Human(Player):
                 else:
                     print("Can't post here, choose another coordinate.")
 
-    def shoot(self) -> tuple[int, int]:
+    def shoot(self):
         """Спрашиваем у игрока куда стрелять"""
-        while not ShootResult.miss or self.is_killed_all(self.opponent_field):
-            print('Select a coordinate for the shot')
-            where_i_was_shooting = []
+
+        while not self.opponent_field.is_killed_all():
+            print(self.name, "\033[0m{}".format('Select a coordinate for the shot'))
             letters = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9}
             shoot_coord = (int(letters[input('Write a letter from "A" to "J" = ').upper()]),
-                           (int(input('Write a value from "1" to "10" = ')) - 1))
-            if shoot_coord not in where_i_was_shooting:
-                where_i_was_shooting.append(shoot_coord)
-                if self.opponent_field.check_shoot(*shoot_coord) == ShootResult.hit:
-                    print('Hit! Take another shot.')
-                if self.opponent_field.check_shoot(*shoot_coord) == ShootResult.kill:
-                    print('The ship is sunk! Take another shot.')
-                    break
-                return shoot_coord
+                           int(input('Write a value from "1" to "10" = ')) - 1)
+
+            if self.check_is_not_shoot_early(shoot_coord) is True:
+                shoot_result = self.opponent_field.check_shoot(shoot_coord)
+                if shoot_result == ShootResult.hit:
+                    print("\033[31m{}".format('Hit! Get another shot.'))
+                    return ShootResult.hit
+                if shoot_result == ShootResult.kill:
+
+                    if self.opponent_field.is_killed_all():
+                        return ShootResult.kill
+                    else:
+                        print("\033[31m{}".format('The ship is destroyed! Get another shot.'))
+                    return ShootResult.kill
+                if shoot_result == ShootResult.miss:
+                    print("\033[36m{}".format("You are miss!"))
+                    return ShootResult.miss
             else:
-                print("It's been shot here before, select other coordinates.")
-        if ShootResult.miss:
-            print('You miss, it goes to your opponent')
+                print("\033[34m{}".format("It's been shot here before, select other coordinates."))
+                break
 
 
 class Bot(Player):
 
     def __init__(self):
         super().__init__()
-        random_names_for_bot = ['Bot_Galina', 'Bot_Sigizmund', 'Bot_Erjan']
-        self.name = choice(random_names_for_bot)
+        random_names_for_bot = ['Bot_Galina', 'Bot_Sigizmund', 'Bot_Erjan', 'Bot_Edelstan', 'Bot_Ragnar']
+        self.name = "\033[32m{}".format(choice(random_names_for_bot))
 
     def place_ships(self):
         """Спрашиваем пользователя куда и ставим корабли"""
@@ -103,17 +108,34 @@ class Bot(Player):
                 if self.own_field.set_ship(rand_row, rand_column, random_direction, ship[0], ship[1]):
                     break
 
-    def shoot(self) -> tuple[int, int]:
+    def shoot(self):
         """Спрашиваем у игрока куда стрелять"""
-        while not ShootResult.miss or self.is_killed_all(self.opponent_field):
-            where_i_was_shooting = []
+        while not self.opponent_field.is_killed_all():
+            print(self.name, "\033[0m{}".format('Select a coordinate for the shot'))
             rand_row = randint(0, 9)
             rand_column = randint(0, 9)
             shoot_coord = (rand_row, rand_column)
-            if shoot_coord not in where_i_was_shooting:
-                where_i_was_shooting.append(shoot_coord)
-                if self.opponent_field.check_shoot(*shoot_coord):
-                    print('Hit! Take another shot.')
+            while shoot_coord in self.where_i_was_shooting:
+                rand_row = randint(0, 9)
+                rand_column = randint(0, 9)
+                shoot_coord = (rand_row, rand_column)
+            if self.check_is_not_shoot_early(shoot_coord) is True:
+                shoot_result = self.opponent_field.check_shoot(shoot_coord)
+                if shoot_result == ShootResult.hit:
+                    print("\033[31m{}".format('Hit! Get another shot.'))
+                    return ShootResult.hit
+                if shoot_result == ShootResult.kill:
+
+                    if self.opponent_field.is_killed_all():
+                        return ShootResult.kill
+                    else:
+                        print("\033[31m{}".format('The ship is destroyed! Get another shot.'))
+                    return ShootResult.kill
+                if shoot_result == ShootResult.miss:
+                    print("\033[36m{}".format("You are miss!"))
+                    return ShootResult.miss
+
+
 
                 # if self.opponent_field.check_shoot(*shoot_coord) == ShootResult.hit:
                 #     while not ShootResult.kill:
@@ -128,5 +150,3 @@ class Bot(Player):
                 #                             where_i_was_shooting.append(shoot_coord)
                 #                             self.opponent_field.check_shoot(*shoot_coord)
 
-                    break
-                return shoot_coord

@@ -26,26 +26,27 @@ class Game:
     def start(self):
         """Основной игровой цикл"""
         while self.winner is None:
-            # Спрашиваем текущего игрока куда стрелять
-
-                row, column = self.current_player.shoot()
-
             # Спрашиваем противника о результате выстрела
-                shoot_result = self.opponent_player.check_shoot(row, column)
+            self.current_player.opponent_field = self.opponent_player.own_field
+            shoot_result = self.current_player.shoot()
 
-                match shoot_result:
-                    case ShootResult.miss:
-                        self.__switch_players()
-                    case ShootResult.hit:
-                        pass
-                    case ShootResult.kill:
-                        if self.opponent_player.is_killed_all():
-                            self.winner = self.current_player
+            match shoot_result:
+                case ShootResult.miss:
+                    self.__switch_players()
+                case ShootResult.hit:
+                    pass
+                case ShootResult.kill:
+                    if self.current_player.opponent_field.is_killed_all():
+                        self.winner = self.current_player
 
         if isinstance(self.winner, Human):
-            print("Winner is", self.winner.name)
+            print("\033[33m{}".format(f"Game over! Congratulations, the winner is player {self.winner.name}"))
         else:
-            if self.winner == self.player1:
-                print("Winner is Bot 1")
-            else:
-                print("Winner is Bot 2")
+            if isinstance(self.winner, Bot):
+                if self.winner == self.player1:
+                    print("\033[31m{}".format('All ship is destroyed!'))
+                    print("\033[33m{}".format(f"Game over! Congratulations, the winner is player {self.winner.name}"))
+                else:
+                    print("\033[31m{}".format('All ship is destroyed!'))
+                    print("\033[33m{}".format(f"Game over! Congratulations, the winner is player {self.winner.name}"))
+

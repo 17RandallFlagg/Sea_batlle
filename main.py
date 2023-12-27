@@ -4,14 +4,15 @@ from player import Human, Bot
 
 if __name__ == '__main__':
     """Точка старта"""
-    Choose_player1 = input('Choose the first player, Human or Bot = '.lower())
-    if Choose_player1 == 'human':
+    Choose_player1 = input('Choose the first player, Human or Bot = ').lower()
+
+    if Choose_player1 == 'human' or Choose_player1 == 'h':
         player1 = Human(input('How is your name? = '))
     else:
         player1 = Bot()
 
-    Choose_player2 = input('Choose the second player, Human or Bot = '.lower())
-    if Choose_player2 == 'human':
+    Choose_player2 = input('Choose the second player, Human or Bot = ').lower()
+    if Choose_player2 == 'human' or Choose_player2 == 'h':
         player2 = Human(input('How is your name? = '))
     else:
         player2 = Bot()
