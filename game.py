@@ -38,15 +38,18 @@ class Game:
                 case ShootResult.kill:
                     if self.current_player.opponent_field.is_killed_all():
                         self.winner = self.current_player
+                    else:
+                        print("\033[31m{}".format('Get another shot.'))
 
         if isinstance(self.winner, Human):
+            print("\033[35m{}".format('All ship is destroyed!'))
             print("\033[33m{}".format(f"Game over! Congratulations, the winner is player {self.winner.name}"))
         else:
             if isinstance(self.winner, Bot):
                 if self.winner == self.player1:
-                    print("\033[31m{}".format('All ship is destroyed!'))
+                    print("\033[35m{}".format('All ship is destroyed!'))
                     print("\033[33m{}".format(f"Game over! Congratulations, the winner is player {self.winner.name}"))
                 else:
-                    print("\033[31m{}".format('All ship is destroyed!'))
+                    print("\033[35m{}".format('All ship is destroyed!'))
                     print("\033[33m{}".format(f"Game over! Congratulations, the winner is player {self.winner.name}"))
 
